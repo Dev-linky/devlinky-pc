@@ -1,0 +1,19 @@
+  
+{
+  "manifest_version": 2,
+  "name": "develinky",
+  "description": "This is web clipper for devlink website",
+  "version": "1.0.0",
+  "icons": {
+    "128": "icon.png"
+  },
+  "browser_action": {
+    "default_title": "develinky",
+    "default_popup": "index.html"
+  },
+  "permissions": [
+    "<all_urls>",
+    "tabs"
+  ],
+  "content_security_policy": "script-src 'self'  'unsafe-eval' 'script-src-elem' https://www.gstatic.com/ https://*.firebaseio.com https://apis.google.com/; object-src 'self'"
+}
