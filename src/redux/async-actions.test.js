@@ -19,16 +19,26 @@ import {
   removeTag,
   setTags,
   setIsFullPageOverlay,
+  loadMyDevlinks,
+  setMyDevlinks,
+  showCardHoverMenu,
+  toggleCardPublicSetting,
 } from './slice';
 
 import { fetchUrl } from '../services/chrome';
 
 import {
-  fetchUrlMetaData, login, isUser, autoSignup, postDevlink,
+  fetchUrlMetaData,
+  login,
+  isUser,
+  autoSignup,
+  postDevlink,
+  fetchMyDevlinks,
+  postMyDevlinkToPublic,
 } from '../services/api';
 
 import {
-  error, url, preview, currentUser, autoCompleteTags, comment, tags,
+  error, url, preview, currentUser, autoCompleteTags, comment, tags, mydevlinks,
 } from '../../fixtures';
 
 const mockStore = configureStore(getDefaultMiddleware());
@@ -240,6 +250,111 @@ describe('actions', () => {
       const actions = store.getActions();
 
       expect(actions[0]).toStrictEqual(setTags([tags[1], tags[2]]));
+    });
+  });
+
+  describe('loadMyDevlinks', () => {
+    beforeEach(() => {
+      store = mockStore({
+        currentUser,
+        tags,
+        mydevlinks: [],
+      });
+
+      fetchMyDevlinks.mockResolvedValue(mydevlinks);
+    });
+
+    it('runs setMyDevlinks', async () => {
+      await store.dispatch(loadMyDevlinks());
+
+      const actions = store.getActions();
+
+      expect(actions[0]).toStrictEqual(setMyDevlinks(mydevlinks));
+    });
+  });
+
+  describe('showCardHoverMenu', () => {
+    beforeEach(() => {
+      store = mockStore({
+        currentUser,
+        tags,
+        mydevlinks,
+      });
+    });
+
+    it('runs setMyDevlinks', async () => {
+      const devlinkId = 1;
+      await store.dispatch(showCardHoverMenu(devlinkId));
+
+      const actions = store.getActions();
+
+      const newMyDevlinks = mydevlinks.map((mydevlink) => (mydevlink?.id === devlinkId ? {
+        ...mydevlink,
+        isShowCardHoverMenu: !mydevlink.isShowCardHoverMenu,
+      } : mydevlink));
+
+      expect(actions[0]).toStrictEqual(setMyDevlinks(newMyDevlinks));
+    });
+  });
+
+  describe('toggleCardPublicSetting', () => {
+    context('when postMyDevlinkToPublic is success', () => {
+      beforeEach(() => {
+        store = mockStore({
+          currentUser,
+          tags,
+          mydevlinks,
+        });
+
+        postMyDevlinkToPublic.mockResolvedValue();
+      });
+
+      it('runs setMyDevlinks', async () => {
+        const mydevlinkId = 1;
+
+        const actions = store.getActions();
+
+        const newMyDevlinks = mydevlinks.map((mydevlink) => (mydevlink.id === mydevlinkId ? {
+          ...mydevlink,
+          isPublic: !mydevlink.isPublic,
+        } : mydevlink));
+
+        await store.dispatch(toggleCardPublicSetting(mydevlinkId));
+
+        expect(actions[0]).toStrictEqual(setMyDevlinks(newMyDevlinks));
+      });
+    });
+
+    context('when postMyDevlinkToPublic is fail', () => {
+      beforeEach(() => {
+        store = mockStore({
+          currentUser,
+          tags,
+          mydevlinks,
+        });
+
+        const mockError = { message: error };
+
+        postMyDevlinkToPublic.mockRejectedValue(mockError);
+      });
+
+      it('runs setError and rallback', async () => {
+        const mydevlinkId = 1;
+
+        const actions = store.getActions();
+
+        const newMyDevlinks = mydevlinks.map((mydevlink) => (mydevlink.id === mydevlinkId ? {
+          ...mydevlink,
+          isPublic: !mydevlink.isPublic,
+        } : mydevlink));
+
+        await store.dispatch(toggleCardPublicSetting(mydevlinkId));
+
+        expect(actions[0]).toStrictEqual(setMyDevlinks(newMyDevlinks));
+
+        expect(actions[1]).toStrictEqual(setMyDevlinks(mydevlinks));
+        expect(actions[2]).toStrictEqual(setError(error));
+      });
     });
   });
 });

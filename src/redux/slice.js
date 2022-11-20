@@ -1,7 +1,14 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 import {
-  fetchUrlMetaData, login, isUser, autoSignup, postDevlink, logout,
+  fetchUrlMetaData,
+  login,
+  isUser,
+  autoSignup,
+  postDevlink,
+  logout,
+  fetchMyDevlinks,
+  postMyDevlinkToPublic,
 } from '../services/api';
 
 import { fetchUrl } from '../services/chrome';
@@ -21,16 +28,25 @@ const { actions, reducer } = createSlice({
     tags: [],
     autoCompleteTags: [],
     toggleSpeechBubble: false,
+    // selectTabMenu: 'archive', // TODO : 아카이브 탭 작업 후 newlink로 변경 필요!
     selectTabMenu: 'newlink',
     isShowUrlValidationMessage: false,
     isShowTagsValidationMessage: false,
     isFullPageOverlay: false,
+    mydevlinks: [],
+    mydevlinksPerPage: [],
   },
   reducers: {
     setError(state, { payload: error }) {
       return {
         ...state,
         error,
+      };
+    },
+    setMyDevlinksPerPage(state, { payload: mydevlinksPerPage }) {
+      return {
+        ...state,
+        mydevlinksPerPage,
       };
     },
     setCurrentUser(state, { payload: currentUser }) {
@@ -120,6 +136,12 @@ const { actions, reducer } = createSlice({
         tags: [],
       };
     },
+    setMyDevlinks(state, { payload: mydevlinks }) {
+      return {
+        ...state,
+        mydevlinks,
+      };
+    },
     settoggleSpeechBubble(state, { payload: toggleSpeechBubble }) {
       return {
         ...state,
@@ -151,8 +173,10 @@ export const {
   resetAutoCompleteTags,
   resetDevlink,
   setIsFullPageOverlay,
+  setMyDevlinks,
   settoggleSpeechBubble,
   resettoggleSpeechBubble,
+  setMyDevlinksPerPage,
 } = actions;
 
 export const loadCurrentUser = () => async (dispatch) => {
@@ -235,6 +259,73 @@ export const removeTag = (removeIndex) => async (dispatch, getState) => {
   const newTags = tags.filter((tag, index) => index !== removeIndex);
 
   dispatch(setTags(newTags));
+};
+
+export const loadMyDevlinks = () => async (dispatch, getState) => {
+  const { currentUser } = getState();
+
+  const myDevlinks = await fetchMyDevlinks(currentUser.uid);
+
+  const newMyDevlinks = myDevlinks.map((myDevlink) => ({
+    ...myDevlink,
+    isShowCardHoverMenu: false,
+  }));
+
+  // dispatch(setMyDevlinks(newMyDevlinks));
+
+  const itemPerPage = 4;
+  const pageUnitCnt = 3;
+
+  const myDevlinksCnt = myDevlinks.length;
+
+  const share = parseInt(myDevlinksCnt / itemPerPage, 10);
+  const rest = myDevlinksCnt % itemPerPage;
+
+  const pageCnt = rest === 0 ? share : share + 1;
+
+  const newMydevlinksPerPage = [];
+
+  for (let i = 1; i <= pageCnt; i++) {
+    const newmydevlinks = myDevlinks.filter((_, index) => index >= 4 * (i - 1) && index <= (4 * i) - 1);
+    newMydevlinksPerPage.push(newmydevlinks);
+  }
+
+  console.log('newMydevlinksPerPage : ', newMydevlinksPerPage);
+
+  dispatch(setMyDevlinksPerPage(newMydevlinksPerPage));
+
+  dispatch(setMyDevlinks(newMydevlinksPerPage[0]));
+};
+
+export const showCardHoverMenu = (devlinkId) => (dispatch, getState) => {
+  const { mydevlinks } = getState();
+
+  const newMyDevlinks = mydevlinks.map((mydevlink) => (mydevlink?.id === devlinkId ? {
+    ...mydevlink,
+    isShowCardHoverMenu: !mydevlink.isShowCardHoverMenu,
+  } : mydevlink));
+
+  dispatch(setMyDevlinks(newMyDevlinks));
+};
+
+export const toggleCardPublicSetting = (mydevlinkId) => async (dispatch, getState) => {
+  const { mydevlinks } = getState();
+
+  const preMydevlink = mydevlinks.find(({ id }) => id === mydevlinkId);
+
+  const newMyDevlinks = mydevlinks.map((mydevlink) => (mydevlink.id === mydevlinkId ? {
+    ...mydevlink,
+    isPublic: !mydevlink.isPublic,
+  } : mydevlink));
+
+  dispatch(setMyDevlinks(newMyDevlinks));
+
+  try {
+    await postMyDevlinkToPublic({ mydevlinkId, isPublic: !preMydevlink.isPublic });
+  } catch (error) {
+    dispatch(setMyDevlinks(mydevlinks));
+    dispatch(setError(error.message));
+  }
 };
 
 export default reducer;
