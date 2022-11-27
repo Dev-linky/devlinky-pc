@@ -33,7 +33,7 @@ export default function Header() {
       <Logo src="../assets/images/logo-small.png" alt="devlinky-logo" />
       {currentUser && (
         <>
-          <Profile src={currentUser.githubProfile} onClick={handleClickProfile} alt="user-profile" />
+          <Profile src={currentUser?.github?.profile} onClick={handleClickProfile} alt="user-profile" />
           <SpeechBubble toggleSpeechBubble={toggleSpeechBubble}>
             <SpeechTail />
             <Bubble>

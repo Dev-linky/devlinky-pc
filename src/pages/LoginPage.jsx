@@ -15,6 +15,8 @@ import { colors, font } from '../styles/commom';
 import style from '../styles/designSystem';
 
 export default function LoginPage() {
+  const dispatch = useDispatch();
+
   const history = useHistory();
 
   const { currentUser } = useCurrentUser();
@@ -22,13 +24,23 @@ export default function LoginPage() {
   useEffect(() => {
     if (currentUser) {
       history.push('/');
+      return;
+    }
+
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const codeParam = urlParams.get('code');
+
+    if (codeParam) {
+      dispatch(loadCurrentUser(codeParam));
     }
   }, [currentUser]);
 
-  const dispatch = useDispatch();
-
   const handleClickLogin = () => {
-    dispatch(loadCurrentUser());
+    const CLIENT_ID = '71c4a24a1bfaad197a54';
+    const SCOPE = 'repo, user';
+
+    window.location.assign(`https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&scope=${SCOPE}`);
   };
 
   return (
