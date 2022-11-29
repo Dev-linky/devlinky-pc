@@ -34,7 +34,7 @@ describe('<LoginPage />', () => {
     });
   });
 
-  context('when user click login button', () => {
+  context('without currentUser && with "?code=X"', () => {
     const dispatch = jest.fn();
 
     beforeEach(() => {
@@ -43,6 +43,32 @@ describe('<LoginPage />', () => {
       }));
 
       useDispatch.mockImplementation(() => dispatch);
+
+      delete window.location;
+
+      window.location = {
+        search: '?code=xyx',
+      };
+    });
+
+    it('dispatch loadCurrentUser', () => {
+      render(<LoginPage />);
+
+      expect(dispatch).toBeCalledTimes(1);
+    });
+  });
+
+  context('when user click login button', () => {
+    beforeEach(() => {
+      useCurrentUser.mockImplementation(() => ({
+        currentUser: null,
+      }));
+
+      delete window.location;
+
+      window.location = {
+        assign: jest.fn(),
+      };
     });
 
     it('change currentUser', () => {
@@ -50,7 +76,7 @@ describe('<LoginPage />', () => {
 
       fireEvent.click(getByText('Github login'));
 
-      expect(dispatch).toBeCalledTimes(1);
+      expect(window.location.assign).toBeCalledTimes(1);
     });
   });
 

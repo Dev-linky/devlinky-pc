@@ -38,7 +38,7 @@ describe('<Header />', () => {
 
       const userProfile = screen.getByAltText('user-profile');
 
-      expect(userProfile).toHaveAttribute('src', currentUser.githubProfile);
+      expect(userProfile).toHaveAttribute('src', currentUser.github.profile);
     });
   });
 

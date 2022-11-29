@@ -14,6 +14,8 @@ import { colors, font } from '../styles/commom';
 
 import style from '../styles/designSystem';
 
+import config from '../services/github/config';
+
 export default function LoginPage() {
   const dispatch = useDispatch();
 
@@ -37,12 +39,11 @@ export default function LoginPage() {
   }, [currentUser]);
 
   const handleClickLogin = () => {
-    const CLIENT_ID = '71c4a24a1bfaad197a54';
+    const CLIENT_ID = config.clientId;
     const SCOPE = 'repo, user';
 
     window.location.assign(`https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&scope=${SCOPE}`);
   };
-
   return (
     <main>
       {/* 문구 수정 필요 */}

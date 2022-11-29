@@ -106,16 +106,12 @@ describe('actions', () => {
         });
 
         login.mockResolvedValue(currentUser);
-
-        isUser.mockImplementation(() => undefined);
       });
 
-      it('runs setCurrentUser and do call autoSignup', async () => {
+      it('runs setCurrentUser', async () => {
         await store.dispatch(loadCurrentUser());
 
         const actions = store.getActions();
-
-        expect(autoSignup).toBeCalledTimes(1);
 
         expect(actions[0]).toStrictEqual(setCurrentUser(currentUser));
       });
