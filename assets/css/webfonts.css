@@ -47,6 +47,13 @@
 
 @font-face {
   font-family: "Spoqa Han Sans Neo";
+  src: url("../webfonts/kr/SpoqaHanSansNeo-Medium.woff2") format("woff2");
+  font-style: normal;
+  font-weight: var(--medium);
+}
+
+@font-face {
+  font-family: "Spoqa Han Sans Neo";
   src: url("../webfonts/kr/SpoqaHanSansNeo-Regular.woff2") format("woff2");
   font-style: normal;
   font-weight: var(--regular);

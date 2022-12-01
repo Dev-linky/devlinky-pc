@@ -24,10 +24,12 @@ const GlobalStyle = () => (
 
       #app {
         height: 600px;
+        overflow: auto;
       }
 
       button {
         cursor: pointer;
+        background: transparent;
       }
     `}
   />

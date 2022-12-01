@@ -14,6 +14,7 @@ import reducer, {
   resetAutoCompleteTags,
   resetDevlink,
   setIsFullPageOverlay,
+  setMyDevlinks,
   settoggleSpeechBubble,
   resettoggleSpeechBubble,
 } from './slice';
@@ -28,6 +29,7 @@ import {
   autoCompleteTags,
   toggleSpeechBubble,
   selectTabMenu,
+  mydevlinks,
 } from '../../fixtures';
 
 describe('reducer', () => {
@@ -45,12 +47,13 @@ describe('reducer', () => {
       isShowUrlValidationMessage: false,
       isShowTagsValidationMessage: false,
       isFullPageOverlay: false,
+      mydevlinks: [],
     };
 
     it('returns initialState', () => {
       const state = reducer(undefined, { type: 'action' });
 
-      expect(state).toEqual(initialState);
+      expect(state).toStrictEqual(initialState);
     });
   });
 
@@ -282,6 +285,25 @@ describe('reducer', () => {
       const state = reducer(initialState, setIsFullPageOverlay(true));
 
       expect(state.isFullPageOverlay).toBeTruthy();
+    });
+  });
+
+  describe('setMyDevlinks', () => {
+    it('set mydevlinks', () => {
+      const initialState = {
+        currentUser: null,
+        url: null,
+        preview: null,
+        comment: null,
+        tags: [],
+        autoCompleteTags: [],
+        toggleSpeechBubble: false,
+        mydevlinks: [],
+      };
+
+      const state = reducer(initialState, setMyDevlinks(mydevlinks));
+
+      expect(state.mydevlinks).toStrictEqual(mydevlinks);
     });
   });
 

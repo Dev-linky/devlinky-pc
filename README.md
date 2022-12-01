@@ -1,2 +1,1 @@
 # devlinky
-# devlinky-pc

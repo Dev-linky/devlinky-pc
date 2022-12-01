@@ -39,6 +39,44 @@ const getDevlink = async ({ url }) => {
   }))[0];
 };
 
+const getDevlinkById = async (devlinkId) => {
+  const result = await db.collection(`devlink${version}`).doc(devlinkId).get();
+  return {
+    id: devlinkId,
+    ...result.data(),
+  };
+};
+
+const getDevlinksByIds = async (devlinkIds) => {
+  const devlinks = devlinkIds.map(async (devlinkId) => {
+    const devlink = await getDevlinkById(devlinkId);
+    return devlink;
+  });
+
+  const result = await Promise.all(devlinks);
+
+  return result;
+};
+
+const getMyDevlinks = async (userUid) => {
+  const itemCntPerPage = 4; // 1페이지당 불러오는 카드 수
+  const pageCntPerRequest = 3; // 1번에 볼 수 있는 페이지 수
+
+  const maxItemOnce = itemCntPerPage * pageCntPerRequest + 1;
+
+  const responses = await db.collection(`mydevlink${version}`)
+    .orderBy('createdAt', 'desc').limit(maxItemOnce)
+    .where('userUid', '==', userUid)
+    .get();
+
+  const myDevlinks = responses.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  }));
+
+  return myDevlinks;
+};
+
 const addNewDevlink = async (devlink) => {
   const newDevlink = {
     ...devlink,
@@ -71,6 +109,14 @@ const addMyDevlink = async ({ userId, devlinkId }) => {
   return doc;
 };
 
+const addMyDevlinkToPublic = async ({ mydevlinkId, isPublic }) => {
+  const result = await db.collection(`mydevlink${version}`).doc(mydevlinkId).update({
+    isPublic,
+  });
+
+  return result;
+};
+
 export {
   firebase,
   githubAuthProvider,
@@ -81,4 +127,8 @@ export {
   addNewDevlink,
   addMyDevlink,
   githubOAuthLogout,
+  getMyDevlinks,
+  getDevlinksByIds,
+  getDevlinkById,
+  addMyDevlinkToPublic,
 };
