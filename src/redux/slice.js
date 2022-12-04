@@ -179,18 +179,9 @@ export const {
   setMyDevlinksPerPage,
 } = actions;
 
-export const loadCurrentUser = () => async (dispatch) => {
+export const loadCurrentUser = (codeParam) => async (dispatch) => {
   try {
-    const currentUser = await login();
-
-    const user = {
-      firebaseUid: currentUser.uid,
-      githubId: currentUser.githubId,
-      githubProfile: currentUser.githubProfile,
-    };
-
-    // eslint-disable-next-line no-unused-vars
-    const response = await isUser(user.firebaseUid) || await autoSignup(user);
+    const currentUser = await login(codeParam);
 
     saveItem('LAST_LOGIN_USER', JSON.stringify(currentUser));
 

@@ -1,6 +1,4 @@
 import {
-  githubOAuthLogin,
-  getUser,
   addUser,
   getDevlink,
   addNewDevlink,
@@ -10,6 +8,11 @@ import {
   getDevlinksByIds,
   addMyDevlinkToPublic,
 } from '../firebase';
+
+import {
+  githubOAuthLogin,
+  getUser,
+} from '../github';
 
 export const fetchUrlMetaData = async (url) => {
   const response = await fetch(url, {
@@ -48,7 +51,24 @@ export const autoSignup = async (user) => {
   return response;
 };
 
-export const login = async () => {
+export const login = async (codeParam) => {
+  const data = await githubOAuthLogin(codeParam);
+
+  const user = await getUser(data.access_token);
+
+  const currentUser = {
+    github: {
+      id: user.login,
+      email: user.bio,
+      profile: user.avatar_url,
+    },
+    accessToken: data.access_token,
+  };
+
+  return currentUser;
+};
+
+export const loginWithFirebase = async () => {
   const response = await githubOAuthLogin();
 
   const firebaseUserIdToken = await response.user.getIdToken(true);
@@ -62,6 +82,15 @@ export const login = async () => {
       firebase: firebaseUserIdToken,
     },
   };
+
+  const user = {
+    firebaseUid: currentUser.uid,
+    githubId: currentUser.githubId,
+    githubProfile: currentUser.githubProfile,
+  };
+
+  // eslint-disable-next-line no-unused-vars
+  const result = await isUser(user.firebaseUid) || await autoSignup(user);
 
   return currentUser;
 };
