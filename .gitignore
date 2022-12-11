@@ -21,6 +21,8 @@ dist
 
 ## env
 config/.env.*
-
+.env*
+src/services/github/config.js
 # Local Netlify folder
 .netlify
+
