@@ -8,10 +8,14 @@ import KakaoShareIcon from '../helper/Icon/KakaoShareIcon';
 import style from '../styles/designSystem';
 
 export default function Card({
-  mydevlink, onHoverCard, onTogglePublicSetting, onClickCard,
+  mydevlink,
+  onHoverCard,
+  onTogglePublicSetting,
+  onClickCard,
 }) {
   const AddOneLine = (node) => {
-    if (node?.getBoundingClientRect().height <= 20) { // tags가 1줄이라면
+    if (node?.getBoundingClientRect().height <= 20) {
+      // tags가 1줄이라면
       node.style.marginTop = '20px';
     }
   };
@@ -26,14 +30,14 @@ export default function Card({
       onMouseLeave={onHoverCard(mydevlink.id)}
     >
       <CardThumbnailWrapper>
-        <img src={mydevlink.devlink.preview.thumbnail} alt="" />
+        <img src={mydevlink.thumbnailUrl} alt='thumbnail' />
         <Mask isShowCardHoverMenu={mydevlink.isShowCardHoverMenu} />
         <ShareWrapper isShowCardHoverMenu={mydevlink.isShowCardHoverMenu}>
           <p>공유하기</p>
-          <button type="button">
+          <button type='button'>
             <KakaoShareIcon />
           </button>
-          <button type="button">
+          <button type='button'>
             <FacebookShareIcon />
           </button>
           <p>{mydevlink.isPublic ? '비공개 설정' : '공개 설정'}</p>
@@ -44,9 +48,8 @@ export default function Card({
           </Switch>
         </ShareWrapper>
       </CardThumbnailWrapper>
-      <CardDetailWrapper onClick={onClickCard(mydevlink.devlink.url)}>
-        <CardComment>{mydevlink.devlink.comment}</CardComment>
-        <CardTitle>{mydevlink.devlink.preview.title}</CardTitle>
+      <CardDetailWrapper onClick={onClickCard(mydevlink.url)}>
+        <CardComment>{mydevlink.comment}</CardComment>
         <TagsWrapper ref={ulTagsCallbackRef}>
           {mydevlink?.tags?.map((tag, index) => (
             // TODO : 테스트 커버 해야 됨
@@ -70,7 +73,8 @@ const CardThumbnailWrapper = styled.div`
 `;
 
 const Mask = styled.div`
-  display: ${({ isShowCardHoverMenu }) => (isShowCardHoverMenu ? 'block' : 'none')};
+  display: ${({ isShowCardHoverMenu }) =>
+    isShowCardHoverMenu ? 'block' : 'none'};
   position: absolute;
   top: 0;
   background: #242835;
@@ -78,7 +82,8 @@ const Mask = styled.div`
 `;
 
 const ShareWrapper = styled.div`
-  display: ${({ isShowCardHoverMenu }) => (isShowCardHoverMenu ? 'block' : 'none')};
+  display: ${({ isShowCardHoverMenu }) =>
+    isShowCardHoverMenu ? 'block' : 'none'};
 
   position: absolute;
   top: 0;
@@ -90,7 +95,7 @@ const ShareWrapper = styled.div`
     margin: 6px 0 4px 0;
   }
 
-  & button {    
+  & button {
     width: 25px;
     height: 25px;
 
@@ -108,10 +113,10 @@ const Oval = styled.div`
   position: absolute;
   width: 16px;
   height: 16px;
-  left:  ${({ isPublic }) => (isPublic ? '4px' : '18px')};
-  top: calc(50% - 16px/2);
+  left: ${({ isPublic }) => (isPublic ? '4px' : '18px')};
+  top: calc(50% - 16px / 2);
 
-  background: #FFFFFF;
+  background: #ffffff;
   border-radius: 18px;
 
   box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.08);
@@ -123,9 +128,9 @@ const Shape = styled.div`
   height: 20px;
   left: 36px;
   right: -36px;
-  top: calc(50% - 20px/2);
+  top: calc(50% - 20px / 2);
 
-  background: #C3CBCD;
+  background: #c3cbcd;
   border-radius: 18px;
   transform: matrix(-1, 0, 0, 1, 0, 0);
 `;
@@ -141,14 +146,11 @@ const CardWrapper = styled.li`
   background: ${style.colors.yoonblue.mediumDark};
   border-radius: 15px;
 
-
-
   & img {
     width: 108px;
     height: 108px;
 
     border-radius: 15px 0 0 15px;
-
   }
 `;
 
@@ -164,6 +166,8 @@ const CardComment = styled.p`
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 
   font-family: ${style.font.family.krNum};
   font-weight: 500;
@@ -183,12 +187,12 @@ const CardTitle = styled.p`
   overflow: hidden;
   text-overflow: ellipsis;
 
-  color: #FFFFFF;
+  color: #ffffff;
 
   opacity: 0.8;
 `;
 
-const TagsWrapper = styled.ul` 
+const TagsWrapper = styled.ul`
   position: absolute;
   top: 58px;
 
@@ -197,14 +201,13 @@ const TagsWrapper = styled.ul`
   flex-wrap: wrap;
 
   & li {
-    margin: 4px 4px 0 0 ;
+    margin: 4px 4px 0 0;
 
     height: 16px;
 
-    background: #8F8ECF;
-  
-    border-radius: 40px;
+    background: #8f8ecf;
 
+    border-radius: 40px;
   }
 `;
 
@@ -220,5 +223,5 @@ const TagText = styled.span`
   font-size: 10px;
   line-height: 12px;
 
-  color:  ${style.colors.white};
+  color: ${style.colors.white};
 `;

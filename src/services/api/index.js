@@ -12,6 +12,8 @@ import {
 import {
   githubOAuthLogin,
   getUser,
+  getIssues,
+  getIssuesPerPage,
 } from '../github';
 
 export const fetchUrlMetaData = async (url) => {
@@ -27,9 +29,16 @@ export const fetchUrlMetaData = async (url) => {
   const el = document.createElement('div');
   el.innerHTML = html;
 
-  const title = el.querySelector('meta[property="og:title"]')?.getAttribute('content') || '제목이 없습니다';
-  const description = el.querySelector('meta[property="og:description"]')?.getAttribute('content') || '설명이 없습니다';
-  const thumbnail = el.querySelector('meta[property="og:image"]')?.getAttribute('content') || '../../assets/images/img_extension_default.png';
+  const title =
+    el.querySelector('meta[property="og:title"]')?.getAttribute('content') ||
+    '제목이 없습니다';
+  const description =
+    el
+      .querySelector('meta[property="og:description"]')
+      ?.getAttribute('content') || '설명이 없습니다';
+  const thumbnail =
+    el.querySelector('meta[property="og:image"]')?.getAttribute('content') ||
+    '../../assets/images/img_extension_default.png';
 
   const preview = {
     url,
@@ -52,8 +61,10 @@ export const autoSignup = async (user) => {
 };
 
 export const login = async (codeParam) => {
-  const data = await githubOAuthLogin(codeParam);
-
+  // const data = await githubOAuthLogin(codeParam);
+  const data = {
+    access_token: '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',
+  };
   const user = await getUser(data.access_token);
 
   const currentUser = {
@@ -90,15 +101,23 @@ export const loginWithFirebase = async () => {
   };
 
   // eslint-disable-next-line no-unused-vars
-  const result = await isUser(user.firebaseUid) || await autoSignup(user);
+  const result = (await isUser(user.firebaseUid)) || (await autoSignup(user));
 
   return currentUser;
 };
 
 export const postDevlink = async ({ userId, devlink }) => {
-  const response = await getDevlink({ url: devlink.url }) || await addNewDevlink(devlink);
+  const response =
+    (await getDevlink({ url: devlink.url })) || (await addNewDevlink(devlink));
 
   const result = await addMyDevlink({ userId, devlinkId: response?.uid });
+  return result;
+};
+
+export const fetchDevlinks = async ({ accessToken, beforeLastCursor }) => {
+  // const result = await getIssues({ accessToken });
+  const result = await getIssuesPerPage({ accessToken, beforeLastCursor });
+
   return result;
 };
 
@@ -111,7 +130,9 @@ export const fetchMyDevlinks = async (userUid) => {
     const devlinks = await getDevlinksByIds(devlinkIds);
 
     const newMyDevlinks = myDevlinks.map((myDevlink) => {
-      const newDevlink = devlinks.find((devlink) => devlink.id === myDevlink.devlinkId);
+      const newDevlink = devlinks.find(
+        (devlink) => devlink.id === myDevlink.devlinkId
+      );
 
       return {
         id: myDevlink.id,
@@ -138,7 +159,8 @@ export const fetchMyDevlinks = async (userUid) => {
         updatedAt: null,
         deletedAt: null,
       },
-      comment: '(1) 2줄 최대치가 얼마나 되는지 보자 좀 !!!! 코멘트 한줄노출 최대 안녕하세요',
+      comment:
+        '(1) 2줄 최대치가 얼마나 되는지 보자 좀 !!!! 코멘트 한줄노출 최대 안녕하세요',
       tags: ['java', 'ss', 'cc', 'asdf', 'asdfasdfsa'],
       isPublic: false,
       createdAt: '2021-08-20T02:10:29.499Z',
@@ -148,7 +170,8 @@ export const fetchMyDevlinks = async (userUid) => {
       devlink: {
         id: 'iVJFrMObJezQQb4zeyfl',
         url: 'https://github.com/daadaadaah/devlinky',
-        thumbnail: 'https://github.githubassets.com/images/modules/open_graph/github-logo.png',
+        thumbnail:
+          'https://github.githubassets.com/images/modules/open_graph/github-logo.png',
         title: 'Build software better, together',
         createdAt: '2021-08-20T03:38:19.978Z',
         deletedAt: null,
@@ -165,7 +188,12 @@ export const fetchMyDevlinks = async (userUid) => {
         id: 'iVJFrMObJezQQb4zeyfl',
         comment: '(1) fsadf',
         preview: {
-          thumbnail: 'https://github.githubassets.com/images/modules/open_graph/github-logo.png', url: 'https://github.com/daadaadaah/devlinky', description: 'GitHub is where people build software. More than 65 million people use GitHub to discover, fork, and contribute to over 200 million projects.', title: 'Build software better, together',
+          thumbnail:
+            'https://github.githubassets.com/images/modules/open_graph/github-logo.png',
+          url: 'https://github.com/daadaadaah/devlinky',
+          description:
+            'GitHub is where people build software. More than 65 million people use GitHub to discover, fork, and contribute to over 200 million projects.',
+          title: 'Build software better, together',
         },
         url: 'https://github.com/daadaadaah/devlinky',
         tags: ['Git/Github'],
@@ -182,7 +210,12 @@ export const fetchMyDevlinks = async (userUid) => {
         id: 'iVJFrMObJezQQb4zeyfl',
         comment: '(1) fsadf',
         preview: {
-          thumbnail: 'https://github.githubassets.com/images/modules/open_graph/github-logo.png', url: 'https://github.com/daadaadaah/devlinky', description: 'GitHub is where people build software. More than 65 million people use GitHub to discover, fork, and contribute to over 200 million projects.', title: 'Build software better, together',
+          thumbnail:
+            'https://github.githubassets.com/images/modules/open_graph/github-logo.png',
+          url: 'https://github.com/daadaadaah/devlinky',
+          description:
+            'GitHub is where people build software. More than 65 million people use GitHub to discover, fork, and contribute to over 200 million projects.',
+          title: 'Build software better, together',
         },
         url: 'https://github.com/daadaadaah/devlinky',
         tags: ['Git/Github'],
@@ -199,7 +232,8 @@ export const fetchMyDevlinks = async (userUid) => {
       devlink: {
         id: 'YYeOgRET9ukevm2G7rRN',
         url: 'https://jeonghwan-kim.github.io/series/2019/12/10/frontend-dev-env-webpack-basic.html',
-        comment: '(2) 2줄 최대치가 얼마나 되는지 보자 좀 !!!! 코멘트 한줄노출 최대 안녕하세요',
+        comment:
+          '(2) 2줄 최대치가 얼마나 되는지 보자 좀 !!!! 코멘트 한줄노출 최대 안녕하세요',
         updatedAt: null,
         tags: ['java', 'ss', 'cc', 'asdf', 'asdfasdfsa'],
         createdAt: '2021-07-07T19:13:49.803Z',
@@ -219,7 +253,12 @@ export const fetchMyDevlinks = async (userUid) => {
         id: 'iVJFrMObJezQQb4zeyfl',
         comment: '(2) fsadf',
         preview: {
-          thumbnail: 'https://github.githubassets.com/images/modules/open_graph/github-logo.png', url: 'https://github.com/daadaadaah/devlinky', description: 'GitHub is where people build software. More than 65 million people use GitHub to discover, fork, and contribute to over 200 million projects.', title: 'Build software better, together',
+          thumbnail:
+            'https://github.githubassets.com/images/modules/open_graph/github-logo.png',
+          url: 'https://github.com/daadaadaah/devlinky',
+          description:
+            'GitHub is where people build software. More than 65 million people use GitHub to discover, fork, and contribute to over 200 million projects.',
+          title: 'Build software better, together',
         },
         url: 'https://github.com/daadaadaah/devlinky',
         tags: ['Git/Github'],
@@ -236,7 +275,12 @@ export const fetchMyDevlinks = async (userUid) => {
         id: 'iVJFrMObJezQQb4zeyfl',
         comment: '(2) fsadf',
         preview: {
-          thumbnail: 'https://github.githubassets.com/images/modules/open_graph/github-logo.png', url: 'https://github.com/daadaadaah/devlinky', description: 'GitHub is where people build software. More than 65 million people use GitHub to discover, fork, and contribute to over 200 million projects.', title: 'Build software better, together',
+          thumbnail:
+            'https://github.githubassets.com/images/modules/open_graph/github-logo.png',
+          url: 'https://github.com/daadaadaah/devlinky',
+          description:
+            'GitHub is where people build software. More than 65 million people use GitHub to discover, fork, and contribute to over 200 million projects.',
+          title: 'Build software better, together',
         },
         url: 'https://github.com/daadaadaah/devlinky',
         tags: ['Git/Github'],
@@ -253,7 +297,12 @@ export const fetchMyDevlinks = async (userUid) => {
         id: 'iVJFrMObJezQQb4zeyfl',
         comment: '(2) fsadf',
         preview: {
-          thumbnail: 'https://github.githubassets.com/images/modules/open_graph/github-logo.png', url: 'https://github.com/daadaadaah/devlinky', description: 'GitHub is where people build software. More than 65 million people use GitHub to discover, fork, and contribute to over 200 million projects.', title: 'Build software better, together',
+          thumbnail:
+            'https://github.githubassets.com/images/modules/open_graph/github-logo.png',
+          url: 'https://github.com/daadaadaah/devlinky',
+          description:
+            'GitHub is where people build software. More than 65 million people use GitHub to discover, fork, and contribute to over 200 million projects.',
+          title: 'Build software better, together',
         },
         url: 'https://github.com/daadaadaah/devlinky',
         tags: ['Git/Github'],
@@ -270,7 +319,8 @@ export const fetchMyDevlinks = async (userUid) => {
       devlink: {
         id: 'YYeOgRET9ukevm2G7rRN',
         url: 'https://jeonghwan-kim.github.io/series/2019/12/10/frontend-dev-env-webpack-basic.html',
-        comment: '(3) 2줄 최대치가 얼마나 되는지 보자 좀 !!!! 코멘트 한줄노출 최대 안녕하세요',
+        comment:
+          '(3) 2줄 최대치가 얼마나 되는지 보자 좀 !!!! 코멘트 한줄노출 최대 안녕하세요',
         updatedAt: null,
         tags: ['java', 'ss', 'cc', 'asdf', 'asdfasdfsa'],
         createdAt: '2021-07-07T19:13:49.803Z',
@@ -290,7 +340,12 @@ export const fetchMyDevlinks = async (userUid) => {
         id: 'iVJFrMObJezQQb4zeyfl',
         comment: '(3) fsadf',
         preview: {
-          thumbnail: 'https://github.githubassets.com/images/modules/open_graph/github-logo.png', url: 'https://github.com/daadaadaah/devlinky', description: 'GitHub is where people build software. More than 65 million people use GitHub to discover, fork, and contribute to over 200 million projects.', title: 'Build software better, together',
+          thumbnail:
+            'https://github.githubassets.com/images/modules/open_graph/github-logo.png',
+          url: 'https://github.com/daadaadaah/devlinky',
+          description:
+            'GitHub is where people build software. More than 65 million people use GitHub to discover, fork, and contribute to over 200 million projects.',
+          title: 'Build software better, together',
         },
         url: 'https://github.com/daadaadaah/devlinky',
         tags: ['Git/Github'],
@@ -307,7 +362,12 @@ export const fetchMyDevlinks = async (userUid) => {
         id: 'iVJFrMObJezQQb4zeyfl',
         comment: '(3) fsadf',
         preview: {
-          thumbnail: 'https://github.githubassets.com/images/modules/open_graph/github-logo.png', url: 'https://github.com/daadaadaah/devlinky', description: 'GitHub is where people build software. More than 65 million people use GitHub to discover, fork, and contribute to over 200 million projects.', title: 'Build software better, together',
+          thumbnail:
+            'https://github.githubassets.com/images/modules/open_graph/github-logo.png',
+          url: 'https://github.com/daadaadaah/devlinky',
+          description:
+            'GitHub is where people build software. More than 65 million people use GitHub to discover, fork, and contribute to over 200 million projects.',
+          title: 'Build software better, together',
         },
         url: 'https://github.com/daadaadaah/devlinky',
         tags: ['Git/Github'],
@@ -324,7 +384,12 @@ export const fetchMyDevlinks = async (userUid) => {
         id: 'iVJFrMObJezQQb4zeyfl',
         comment: '(3) fsadf',
         preview: {
-          thumbnail: 'https://github.githubassets.com/images/modules/open_graph/github-logo.png', url: 'https://github.com/daadaadaah/devlinky', description: 'GitHub is where people build software. More than 65 million people use GitHub to discover, fork, and contribute to over 200 million projects.', title: 'Build software better, together',
+          thumbnail:
+            'https://github.githubassets.com/images/modules/open_graph/github-logo.png',
+          url: 'https://github.com/daadaadaah/devlinky',
+          description:
+            'GitHub is where people build software. More than 65 million people use GitHub to discover, fork, and contribute to over 200 million projects.',
+          title: 'Build software better, together',
         },
         url: 'https://github.com/daadaadaah/devlinky',
         tags: ['Git/Github'],

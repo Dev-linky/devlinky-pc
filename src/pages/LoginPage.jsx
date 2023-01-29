@@ -32,23 +32,30 @@ export default function LoginPage() {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     const codeParam = urlParams.get('code');
-
-    if (codeParam) {
-      dispatch(loadCurrentUser(codeParam));
-    }
+    dispatch(loadCurrentUser(''));
+    // if (codeParam) {
+    //   dispatch(loadCurrentUser(codeParam));
+    // }
   }, [currentUser]);
 
   const handleClickLogin = () => {
     const CLIENT_ID = config.clientId;
     const SCOPE = 'repo, user';
 
-    window.location.assign(`https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&scope=${SCOPE}`);
+    window.location.assign(
+      `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&scope=${SCOPE}&redirect_uri=https://21swnpibr1.execute-api.ap-northeast-2.amazonaws.com/login`
+    );
   };
   return (
     <main>
       {/* 문구 수정 필요 */}
-      <Welcome>어떤 문구를 넣어야 되나어떤 문구를 넣어야 되나어떤 문구를 넣어야 되나어떤 문구를 넣어야 되나어떤 문구를 넣어야 되나</Welcome>
-      <LoginButton type="button" id="btn-login" onClick={handleClickLogin}>Github login</LoginButton>
+      <Welcome>
+        어떤 문구를 넣어야 되나어떤 문구를 넣어야 되나어떤 문구를 넣어야
+        되나어떤 문구를 넣어야 되나어떤 문구를 넣어야 되나
+      </Welcome>
+      <LoginButton type='button' id='btn-login' onClick={handleClickLogin}>
+        Github login
+      </LoginButton>
     </main>
   );
 }
@@ -61,13 +68,12 @@ const Welcome = styled.p`
 
   padding: 0 ${style.common.interval.small};
 
-  color:  ${colors.gray.light};
+  color: ${colors.gray.light};
 
   text-align: center;
   font-family: ${font.family.krNum};
-  font-size: ${font.size.regular};;
+  font-size: ${font.size.regular};
   font-weight: ${font.weight.light};
-
 `;
 
 const LoginButton = styled.button`
@@ -78,15 +84,14 @@ const LoginButton = styled.button`
   width: 240px;
   height: 42px;
 
-  font-size: ${style.button.font.size};;
+  font-size: ${style.button.font.size};
   font-weight: ${style.button.font.weight};
-  color:  ${style.button.normal.color};
+  color: ${style.button.normal.color};
 
   background: ${style.button.normal.background};
   border-radius: 63px;
 
-  
   &:hover {
-    background-color:${style.button.hover.background};
+    background-color: ${style.button.hover.background};
   }
 `;
